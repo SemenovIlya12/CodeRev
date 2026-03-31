@@ -1,97 +1,143 @@
-"""
-Даны ссылки A1 и A2 на первый и последний элементы непустого двусвязного списка, содержащего четное количество элементов.
- Преобразовать список в два циклических списка ( записав в свойство Next последнего элемента списка ссылку на его первый
- элемент, а в свойство Prev первого элемента — ссылку на последний элемент.), первый из которых содержит первую половину элементов
- исходного списка, а второй —вторую половину. Вывести ссылки A3 и A4 на два средних элемента исходного списка (элемент A3
-  должен входить в первый циклический список, а элемент A4 — во второй). Новые объекты типа Node не создавать.
-"""
-
 import gc
 
 
 class Node:
-    """Класс узла двусвязного списка"""
+    '''класс узла с данными'''
 
     def __init__(self, data):
-        self.data = data  # Данные узла
-        self.next = None  # Ссылка на следующий узел
-        self.prev = None  # Ссылка на предыдущий узел
+        '''
+        инициализирует узел
 
-    def Dispose(self):
-        """Метод для удаления узла: очищает связи и вызывает сборщик мусора"""
+        :param data: данные, которые будут храниться в узле
+        '''
+        # данные узла
+        self.data = data
+        # ссылка на следующий узел
+        self.next = None
+        # ссылка на предыдущий узел
+        self.prev = None
+
+    def dispose(self):
+        '''
+        Метод для удаления узла, убирает связи
+        и запускает сборщик мусора
+        '''
+
         print(f"Узел с удалёнными данными {self.data}")
-        self.next = None  # Убираем ссылку на следующий узел
-        self.prev = None  # Убираем ссылку на предыдущий узел
-        gc.collect()  # Принудительно запускаем сборку мусора
+        # убираем ссылку на следующий узел
+        self.next = None
+        # убираем ссылку на предыдущий узел
+        self.prev = None
+        # принудительно запускаем сборку мусора
+        gc.collect()
 
 
 class DoublyLinkedList:
-    """Класс двусвязного списка"""
+    '''класс двусвязного списка'''
 
     def __init__(self):
-        self.first = None  # Ссылка на первый элемент списка
-        self.last = None  # Ссылка на последний элемент списка
+        '''инициализирует двусвязный список'''
+        # ссылка на первый элемент списка
+        self.first = None
+        # ссылка на последний элемент списка
+        self.last = None
 
     def push(self, new_data):
-        """Добавляет новый узел в конец списка"""
-        new_node = Node(new_data)  # Создаем новый узел
+        '''
+        добавляет новый узел с заданным значением
+        в начало списка
+
+        :param new_data: значение, хранимое в новом узле
+        '''
+
+        # создаем новый узел
+        new_node = Node(new_data)
         if self.first is None:
-            self.first = self.last = new_node  # Первый узел становится и первым, и последним
+            # первый узел становится и первым, и последним
+            self.first = self.last = new_node
         else:
-            self.last.next = new_node  # У старого последнего узла обновляется next-ссылка
-            new_node.prev = self.last  # Новый узел ссылается назад на предыдущий
-            self.last = new_node  # Новый узел становится последним
+            # у старого последнего узла обновляется next-ссылка
+            self.last.next = new_node
+            # новый узел ссылается назад на предыдущий
+            new_node.prev = self.last
+            # новый узел становится последним
+            self.last = new_node
 
     def print_list(self, head, is_circular=False):
-        """Выводит список в консоль, поддерживает как обычный, так и циклический вывод"""
+        '''
+        печатает список в консоль
+
+        :param head: начальный узел списка
+        :param is_circular: флаг, является ли список цикличным
+        '''
+
         if head is None:
             print("Empty list")
             return
 
         temp = head
         first_iteration = True
-        while first_iteration or (is_circular and temp != head):
+        while (first_iteration
+               or (is_circular and temp != head)):
             first_iteration = False
             print(temp.data, end=" <-> ")
             temp = temp.next
-            if temp is None and not is_circular:  # Обычный список, дошли до конца
+            # обычный список, дошли до конца
+            if temp is None and not is_circular:
                 break
 
         print("(circular)" if is_circular else "None")
 
     def split_into_circular_lists(self):
-        """Разделяет список на два циклических списка и находит средние элементы"""
+        '''
+        разделяет список на два циклических списка
+        и возвращает ссылки на их головы, а также
+        на два средних элемента исходного списка.
+
+        :return:кортеж (c1, c2, a3, a4), где:
+                c1 — голова первого циклического списка,
+                c2 — голова второго циклического списка,
+                a3 — первый средний элемент,
+                a4 — второй средний элемент.
+        '''
         if self.first is None or self.last is None:
             return None, None, None, None
 
-        # Используем два указателя для нахождения середины списка
+        # используем два указателя для
+        # нахождения середины списка
         slow = fast = self.first
         while fast and fast.next:
-            fast = fast.next.next  # Быстрый указатель движется в два раза быстрее
+            # быстрый указатель движется в два раза быстрее
+            fast = fast.next.next
             if fast:
-                slow = slow.next  # Медленный указатель движется по одному шагу
+                # медленный указатель движется по одному шагу
+                slow = slow.next
 
-        # Определяем средние элементы
-        A3 = slow  # Первый средний элемент
-        A4 = slow.next  # Второй средний элемент
+        # определяем средние элементы
+        # первый средний элемент
+        a3 = slow
+        # второй средний элемент
+        a4 = slow.next
 
-        # Разделяем список на две половины
+        # разделяем список на две половины
         first_half_head = self.first
-        first_half_tail = A3
+        first_half_tail = a3
 
-        second_half_head = A4
+        second_half_head = a4
         second_half_tail = self.last
 
-        # Разрываем связи между половинами
+        # разрываем связи между половинами
         if first_half_tail:
-            first_half_tail.next = first_half_head  # Делаем первую половину циклической
+            # Делаем первую половину циклической
+            first_half_tail.next = first_half_head
             first_half_head.prev = first_half_tail
 
         if second_half_tail:
-            second_half_tail.next = second_half_head  # Делаем вторую половину циклической
+            # Делаем вторую половину циклической
+            second_half_tail.next = second_half_head
             second_half_head.prev = second_half_tail
 
-        return first_half_head, second_half_head, A3, A4
+        return first_half_head, second_half_head, a3, a4
 
     def printLL(self):
         current_node = self.first
@@ -100,25 +146,25 @@ class DoublyLinkedList:
             current_node = current_node.next
 
 
-# Пример
-
-# Создаем двусвязный список с четным количеством элементов
+# пример
+# создаем двусвязный список с четным количеством элементов
 dll = DoublyLinkedList()
-for i in range(1, 7):  # Четное количество элементов (1, 2, 3, 4, 5, 6)
+# четное количество элементов (1, 2, 3, 4, 5, 6)
+for i in range(1, 7):
     dll.push(i)
 
-print("Исходный список:")
+print("исходный список:")
 dll.print_list(dll.first)
 dll.printLL()
 
-# Разделяем на два циклических списка
+# разделяем на два циклических списка
 C1, C2, A3, A4 = dll.split_into_circular_lists()
 
-print("Первый циклический список:")
+print("первый циклический список:")
 dll.print_list(C1, is_circular=True)
-print("Второй циклический список:")
+print("второй циклический список:")
 dll.print_list(C2, is_circular=True)
 
-print("Средние элементы исходного списка:")
+print("средние элементы исходного списка:")
 print("A3:", A3.data if A3 else "null")
 print("A4:", A4.data if A4 else "null")

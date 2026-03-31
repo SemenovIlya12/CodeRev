@@ -1,75 +1,130 @@
-"""Дан набор из 10 чисел. Создать очередь, содержащую данные числа в
-указанном порядке (первое число будет размещаться в  начале очереди,
-последнее — в конце), и вывести ссылки A1 и A2 на начало и конец очереди."""
-
 
 class Node:
-    """Класс узла очереди"""
+    '''класс, представляющий узел очереди'''
 
     def __init__(self, data):
-        self.data = data  # Значение узла
-        self.next = None  # Ссылка на следующий узел
+        '''
+        Инициализирует узел очереди
+
+        :param data: данные, которые будут храниться
+            в узле очереди
+        '''
+
+        # значение узла
+        self.data = data
+        # ссылка на следующий узел
+        self.next = None
 
 
 class Queue:
-    """Класс динамической очереди"""
+    '''класс, представляющий динамическую очередь'''
 
     def __init__(self):
-        self.front = None  # Начало очереди (A1)
-        self.rear = None  # Конец очереди (A2)
+        '''инициализация динамической очереди'''
 
-    def IsEmpty(self):
-        """Проверка, пустая ли очередь"""
+        # начало очереди (A1)
+        self.front = None
+        # конец очереди (A2)
+        self.rear = None
+
+    def is_empty(self):
+        '''
+        проверяет, пуста ли очередь
+
+        :return: True если очередь пуста, иначе - False
+        :rtype: bool
+        '''
+
         return self.front is None
 
-    def Enqueue(self, value):
-        """Добавление элемента в конец очереди"""
-        new_node = Node(value)
-        if self.IsEmpty():
-            self.front = self.rear = new_node  # Если очередь была пустой
-        else:
-            self.rear.next = new_node  # Привязываем новый узел к последнему
-            self.rear = new_node  # Обновляем конец очереди
+    def enqueue(self, value):
+        '''
+        добавление элемента в конец очереди
 
-    def Dequeue(self):
-        """Удаление элемента из начала очереди"""
-        if self.IsEmpty():
+        :param value: значение элемента,
+            который будет добавлен в очередь
+        :return:
+        '''
+
+        new_node = Node(value)
+        if self.is_empty():
+            # если очередь была пустой
+            self.front = self.rear = new_node
+        else:
+            # привязываем новый узел к последнему
+            self.rear.next = new_node
+            # обновляем конец очереди
+            self.rear = new_node
+
+    def dequeue(self):
+        '''
+        удаляет элемент из начала очереди
+        и возращает его знаение
+
+        :return: значение удаленного элемента
+        :raises IndexError: если очередь пуста
+        '''
+
+        if self.is_empty():
             raise IndexError("Очередь пуста")
 
         value = self.front.data
-        self.front = self.front.next  # Смещаем начало очереди
+        # смещаем начало очереди
+        self.front = self.front.next
 
-        if self.front is None:  # Если очередь стала пустой
+        # если очередь стала пустой
+        if self.front is None:
             self.rear = None
 
         return value
 
-    def Front(self):
-        """Возвращает первый элемент очереди без удаления"""
-        if self.IsEmpty():
+    def front(self):
+        '''
+        возвращает первый элемент очереди без удаления
+
+        :return: первый элемент очереди
+        :raises IndexError: если очередь пуста
+        '''
+
+        if self.is_empty():
             raise IndexError("Очередь пуста")
         return self.front.data
 
-    def Rear(self):
-        """Возвращает последний элемент очереди без удаления"""
-        if self.IsEmpty():
+    def rear(self):
+        '''
+        возвращает последний элемент очереди без удаления
+
+        :return: последний элемент очереди
+        :raises IndexError: если очередь пуста
+        '''
+
+        if self.is_empty():
             raise IndexError("Очередь пуста")
         return self.rear.data
 
-    def PrintQueue(self):
-        """Вывод очереди (от начала к концу)"""
+    def print_queue(self):
+        '''
+        вывод очереди (от начала к концу)
+
+        :return:
+        '''
         current = self.front
-        print("Очередь (начало -> конец):", end=" ")
+        print("очередь (начало -> конец):", end=" ")
         while current:
             print(current.data, end=" ")
             current = current.next
         print()
 
-    def PrintQueueVisual(self):
-        """Красивый вывод очереди в виде стрелочек"""
+    def print_queue_visual(self):
+        '''
+        красивый вывод очереди с стрелочками :)
+
+        :return:
+        '''
+
         current = self.front
-        if self.IsEmpty():
-            print("Очередь пуста!")
+        if self.is_empty():
+            print("очередь пуста!")
             return
         output = []
         while current:
@@ -77,18 +132,24 @@ class Queue:
             current = current.next
         print(" → ".join(output))
 
-
-# === ОСНОВНОЙ КОД ===
+# основной код
 queue = Queue()
 
-# Ввод 10 чисел от пользователя
-numbers = list(map(int, input("Введите 10 чисел через пробел: ").split()))
+# ввод 10 чисел от пользователя
+numbers = list(map(int,
+                   input("введите 10 чисел через пробел: ")
+                   .split()
+                   ))
 
-# Добавляем числа в очередь
+# добавляем числа в очередь
 for num in numbers:
-    queue.Enqueue(num)
+    queue.enqueue(num)
 
-# Вывод результатов
-queue.PrintQueueVisual()
-print(f"Ссылка на начало (A1): {queue.front} (значение: {queue.Front()})")
-print(f"Ссылка на конец (A2): {queue.rear} (значение: {queue.Rear()})")
+# вывод результатов
+queue.print_queue_visual()
+
+print(f"ссылка на начало (A1): {queue.front} "
+      f"(значение: {queue.front()})")
+
+print(f"ссылка на конец (A2): {queue.rear} "
+      f"(значение: {queue.rear()})")
